@@ -1,0 +1,82 @@
+{% extends "contracts/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate "Contract" %} № {{ contract.number }} / {{ contract.contract_date|date:"d.m.Y" }}</h1>
+
+<article>
+  <p><strong>{% translate "Status" %}:</strong> {{ contract.get_status_display }}</p>
+  <p><strong>{% translate "Trip" %}:</strong> {{ contract.trip }}</p>
+  <p><strong>{% translate "Travelers" %}:</strong></p>
+  <ul>
+    {% for t in contract.travelers.all %}
+      <li>{{ t.full_name }} ({{ t.egn }})</li>
+    {% endfor %}
+  </ul>
+  
+  <p><strong>{% translate "Email for sending" %}:</strong> {{ contract.email }}</p>
+    <p><strong>{% translate "Package price (EUR)" %}:</strong> {{ contract.price }}</p>
+  <p><strong>{% translate "Deposit (EUR)" %}:</strong> {{ contract.deposit|default:"-" }}</p>
+</article>
+{% if contract.sent_at %}
+  <p><strong>{% translate "Sent at" %}:</strong> {{ contract.sent_at|date:"d.m.Y H:i" }}</p>
+{% endif %}
+
+<div class="actions">
+   {% if not contract.is_closed %}
+    <a href="{% url 'contracts:edit' contract.pk %}" role="button" class="secondary outline">
+      {% translate "Edit" %}
+    </a>
+  {% endif %}
+  
+  <a href="{% url 'contracts:pdf' contract.pk %}" target="_blank" role="button" class="secondary">
+    {% translate "Generate PDF" %}
+  </a>
+
+   {% translate "Send the contract to" as confirm_text %}
+  <form method="post" action="{% url 'contracts:send' contract.pk %}"
+        onsubmit="return confirm('{{ confirm_text|escapejs }} {{ contract.email|escapejs }}?')">
+    {% csrf_token %}
+    <button type="submit" {% if not contract.email %}disabled{% endif %}>
+      {% translate "Send by email" %}
+    </button>
+  </form>
+</div>
+<h3>{% translate "Signed contract" %}</h3>
+
+{% if contract.signed_file %}
+  <p>
+    {% translate "Signed at" %}: {{ contract.signed_at|date:"d.m.Y H:i" }}
+    <a href="{% url 'contracts:signed_file' contract.pk %}" target="_blank">
+      {% translate "Open signed contract" %}
+    </a>
+  </p>
+{% endif %}
+
+{% if not contract.is_closed %}
+  <form method="post" action="{% url 'contracts:upload_signed' contract.pk %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ upload_form.signed_file.label_tag }}
+    {{ upload_form.signed_file }}
+    <button type="submit">{% translate "Upload signed contract" %}</button>
+  </form>
+{% endif %}
+
+<div class="actions">
+  {% if contract.can_archive %}
+    <form method="post" action="{% url 'contracts:archive' contract.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="secondary">{% translate "Archive" %}</button>
+    </form>
+  {% endif %}
+
+  {% if contract.can_cancel %}
+    {% translate "Cancel this contract?" as cancel_text %}
+    <form method="post" action="{% url 'contracts:cancel' contract.pk %}"
+          onsubmit="return confirm('{{ cancel_text|escapejs }}')">
+      {% csrf_token %}
+      <button type="submit" class="secondary outline">{% translate "Cancel contract" %}</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

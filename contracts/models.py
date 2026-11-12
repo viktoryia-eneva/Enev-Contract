@@ -15,7 +15,6 @@ class Trip(models.Model):
     accommodation = models.CharField(_("Accommodation"), max_length=200, default="да")
     nights = models.CharField(_("Overnight stays"), max_length=200, default="да")
     meals = models.CharField(_("Meals"), max_length=200, blank=True)
-    price = models.DecimalField(_("Price (EUR)"), max_digits=10, decimal_places=2)
     min_participants = models.PositiveIntegerField(_("Minimum participants"), default=20)
     notice_days = models.PositiveIntegerField(_("Notice period if minimum not reached (working days)"), default=10)
     payment_days = models.PositiveIntegerField(_("Payment deadline (working days before departure)"), default=10)
@@ -58,7 +57,9 @@ class Contract(models.Model):
         contract_date = models.DateField(_("Contract date"), default=date.today)
         trip = models.ForeignKey(Trip, on_delete=models.PROTECT, related_name="contracts", verbose_name=_("Trip"))
         travelers = models.ManyToManyField(Traveler, related_name="contracts", verbose_name=_("Travelers"))
+        price = models.DecimalField(_("Package price (EUR)"), max_digits=10, decimal_places=2, default=0)
         deposit = models.DecimalField(_("Deposit (EUR)"), max_digits=10, decimal_places=2, null=True, blank=True)
+        email = models.EmailField(_("Email for sending"), blank=True)
         status = models.CharField(_("Status"), max_length=20, choices=Status.choices, default=Status.DRAFT)
         pdf = models.FileField(_("Generated PDF"), upload_to="contracts/generated/", blank=True)
         signed_file = models.FileField(_("Signed contract"), upload_to="contracts/signed/", blank=True)
@@ -74,6 +75,15 @@ class Contract(models.Model):
         
         def __str__(self):
             return f"№ {self.number} / {self.contract_date:%d.%m.%Y}"
+        
+        def can_archive(self):
+            return self.status == self.Status.SIGNED
+        
+        def can_cancel(self):
+            return self.status in (self.Status.DRAFT, self.Status.SENT, self.Status.SIGNED)
+        
+        def is_closed(self):
+            return self.status in (self.Status.ARCHIVED, self.Status.CANCELLED)
         
         def save(self, *args, **kwargs):
             if not self.number:

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Django: local database and uploaded/generated files (contain personal data)
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Secrets (passwords)
+.env*
+
+# Editor and OS files
+.vscode/
+Thumbs.db
+.DS_Store

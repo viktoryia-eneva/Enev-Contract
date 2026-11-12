@@ -1,0 +1,24 @@
+{% extends "contracts/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate "New contract" %}</h1>
+
+<p><a href="{% url 'contracts:trip_create' %}">+ {% translate "New trip" %}</a></p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_div }}
+
+  <h3>{% translate "Travelers" %}</h3>
+  {{ formset.management_form }}
+  {% for f in formset %}
+    <div class="grid">
+      <div>{{ f.full_name.label_tag }} {{ f.full_name }} {{ f.full_name.errors }}</div>
+      <div>{{ f.egn.label_tag }} {{ f.egn }} {{ f.egn.errors }}</div>
+    </div>
+  {% endfor %}
+
+  <button type="submit">{% translate "Create contract" %}</button>
+</form>
+{% endblock %}

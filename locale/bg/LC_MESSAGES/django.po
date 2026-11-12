@@ -1,0 +1,385 @@
+# Bulgarian translation for the Enev Contract project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Enev Contract\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-12 15:10+0200\n"
+"PO-Revision-Date: 2026-11-12 15:30+0200\n"
+"Last-Translator: \n"
+"Language-Team: Bulgarian\n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\config\settings.py:113
+msgid "Bulgarian"
+msgstr "Български"
+
+#: .\config\settings.py:114
+msgid "English"
+msgstr "Английски"
+
+#: .\contracts\forms.py:9 .\contracts\models.py:27 .\contracts\models.py:58
+#: .\contracts\templates\contracts\contract_detail.html:9
+#: .\contracts\templates\contracts\contract_list.html:26
+msgid "Trip"
+msgstr "Екскурзия"
+
+#: .\contracts\forms.py:10 .\contracts\models.py:62
+#: .\contracts\templates\contracts\contract_detail.html:17
+msgid "Email for sending"
+msgstr "Имейл за изпращане"
+
+#: .\contracts\forms.py:11 .\contracts\models.py:60
+#: .\contracts\templates\contracts\contract_detail.html:18
+msgid "Package price (EUR)"
+msgstr "Цена на пакета (EUR)"
+
+#: .\contracts\forms.py:12 .\contracts\models.py:61
+#: .\contracts\templates\contracts\contract_detail.html:19
+msgid "Deposit (EUR)"
+msgstr "Депозит (EUR)"
+
+#: .\contracts\forms.py:15 .\contracts\models.py:35
+msgid "Full name"
+msgstr "Три имена"
+
+#: .\contracts\forms.py:16 .\contracts\models.py:36
+msgid "Personal ID (EGN/LNCh)"
+msgstr "ЕГН/ЛНЧ"
+
+#: .\contracts\forms.py:24
+msgid "Enter the personal ID."
+msgstr "Въведете ЕГН."
+
+#: .\contracts\forms.py:26
+msgid "Enter the name."
+msgstr "Въведете име."
+
+#: .\contracts\forms.py:28
+msgid "The personal ID must be exactly 10 digits."
+msgstr "ЕГН трябва да е точно 10 цифри."
+
+#: .\contracts\forms.py:36
+msgid "Signed contract (PDF or photo)"
+msgstr "Подписан договор (PDF или снимка)"
+
+#: .\contracts\forms.py:42
+msgid "Allowed file types: PDF, JPG, PNG."
+msgstr "Позволени файлове: PDF, JPG, PNG."
+
+#: .\contracts\forms.py:44
+#, python-format
+msgid "The file is larger than %(size)s MB."
+msgstr "Файлът е по-голям от %(size)s MB."
+
+#: .\contracts\forms.py:64
+msgid "The end date cannot be before the start date."
+msgstr "Крайната дата не може да е преди началната."
+
+#: .\contracts\models.py:9 .\contracts\templates\contracts\trip_list.html:14
+msgid "Destination"
+msgstr "Дестинация"
+
+#: .\contracts\models.py:10
+msgid "Date from"
+msgstr "Дата от"
+
+#: .\contracts\models.py:11
+msgid "Date to"
+msgstr "Дата до"
+
+#: .\contracts\models.py:12 .\contracts\templates\contracts\trip_list.html:16
+msgid "Departure point"
+msgstr "Начален пункт"
+
+#: .\contracts\models.py:13
+msgid "Return point"
+msgstr "Краен пункт"
+
+#: .\contracts\models.py:14
+msgid "Transport"
+msgstr "Транспорт"
+
+#: .\contracts\models.py:15
+msgid "Accommodation"
+msgstr "Настаняване"
+
+#: .\contracts\models.py:16
+msgid "Overnight stays"
+msgstr "Нощувки"
+
+#: .\contracts\models.py:17
+msgid "Meals"
+msgstr "Изхранване"
+
+#: .\contracts\models.py:18
+msgid "Minimum participants"
+msgstr "Минимален брой участници"
+
+#: .\contracts\models.py:19
+msgid "Notice period if minimum not reached (working days)"
+msgstr "Срок за уведомяване при недостигнат минимум (работни дни)"
+
+#: .\contracts\models.py:20
+msgid "Payment deadline (working days before departure)"
+msgstr "Срок за плащане (работни дни преди отпътуване)"
+
+#: .\contracts\models.py:21
+msgid "Included services"
+msgstr "Включени услуги"
+
+#: .\contracts\models.py:22
+msgid "Not included"
+msgstr "Не са включени"
+
+#: .\contracts\models.py:23
+msgid "Passport/visa/health requirements"
+msgstr "Изисквания за паспорт/виза/здраве"
+
+#: .\contracts\models.py:24
+msgid "Cancellation terms"
+msgstr "Условия за отказ"
+
+#: .\contracts\models.py:28 .\contracts\templates\contracts\base.html:27
+#: .\contracts\templates\contracts\trip_list.html:6
+msgid "Trips"
+msgstr "Екскурзии"
+
+#: .\contracts\models.py:37
+msgid "Email"
+msgstr "Имейл"
+
+#: .\contracts\models.py:38
+msgid "Phone"
+msgstr "Телефон"
+
+#: .\contracts\models.py:41
+msgid "Traveler"
+msgstr "Турист"
+
+#: .\contracts\models.py:42 .\contracts\models.py:59
+#: .\contracts\templates\contracts\contract_detail.html:10
+#: .\contracts\templates\contracts\contract_form.html:13
+#: .\contracts\templates\contracts\contract_list.html:25
+msgid "Travelers"
+msgstr "Туристи"
+
+#: .\contracts\models.py:50
+msgid "Draft"
+msgstr "Чернова"
+
+#: .\contracts\models.py:51
+msgid "Sent"
+msgstr "Изпратен"
+
+#: .\contracts\models.py:52
+msgid "Signed"
+msgstr "Подписан"
+
+#: .\contracts\models.py:53
+msgid "Archived"
+msgstr "Архивиран"
+
+#: .\contracts\models.py:54
+msgid "Canceled"
+msgstr "Анулиран"
+
+#: .\contracts\models.py:56
+msgid "Number"
+msgstr "Номер"
+
+#: .\contracts\models.py:57
+msgid "Contract date"
+msgstr "Дата на договора"
+
+#: .\contracts\models.py:63
+#: .\contracts\templates\contracts\contract_detail.html:8
+#: .\contracts\templates\contracts\contract_list.html:27
+msgid "Status"
+msgstr "Статус"
+
+#: .\contracts\models.py:64
+msgid "Generated PDF"
+msgstr "Генериран PDF"
+
+#: .\contracts\models.py:65
+#: .\contracts\templates\contracts\contract_detail.html:45
+msgid "Signed contract"
+msgstr "Подписан договор"
+
+#: .\contracts\models.py:66
+#: .\contracts\templates\contracts\contract_detail.html:22
+msgid "Sent at"
+msgstr "Изпратен на"
+
+#: .\contracts\models.py:67
+#: .\contracts\templates\contracts\contract_detail.html:49
+msgid "Signed at"
+msgstr "Подписан на"
+
+#: .\contracts\models.py:68
+msgid "Created at"
+msgstr "Създаден на"
+
+#: .\contracts\models.py:69
+msgid "Updated at"
+msgstr "Променен на"
+
+#: .\contracts\models.py:72
+#: .\contracts\templates\contracts\contract_detail.html:5
+msgid "Contract"
+msgstr "Договор"
+
+#: .\contracts\models.py:73 .\contracts\templates\contracts\base.html:26
+#: .\contracts\templates\contracts\contract_list.html:5
+#: .\contracts\templates\contracts\trip_list.html:17
+msgid "Contracts"
+msgstr "Договори"
+
+#: .\contracts\templates\contracts\base.html:28
+#: .\contracts\templates\contracts\contract_form.html:5
+msgid "New contract"
+msgstr "Нов договор"
+
+#: .\contracts\templates\contracts\contract_detail.html:28
+#: .\contracts\templates\contracts\trip_list.html:29
+msgid "Edit"
+msgstr "Редактирай"
+
+#: .\contracts\templates\contracts\contract_detail.html:33
+msgid "Generate PDF"
+msgstr "Генерирай PDF"
+
+#: .\contracts\templates\contracts\contract_detail.html:36
+msgid "Send the contract to"
+msgstr "Изпращане на договора до"
+
+#: .\contracts\templates\contracts\contract_detail.html:41
+msgid "Send by email"
+msgstr "Изпрати по имейл"
+
+#: .\contracts\templates\contracts\contract_detail.html:51
+msgid "Open signed contract"
+msgstr "Отвори подписания договор"
+
+#: .\contracts\templates\contracts\contract_detail.html:61
+msgid "Upload signed contract"
+msgstr "Качи подписан договор"
+
+#: .\contracts\templates\contracts\contract_detail.html:69
+msgid "Archive"
+msgstr "Архивирай"
+
+#: .\contracts\templates\contracts\contract_detail.html:74
+msgid "Cancel this contract?"
+msgstr "Да се анулира ли договорът?"
+
+#: .\contracts\templates\contracts\contract_detail.html:78
+msgid "Cancel contract"
+msgstr "Анулирай договора"
+
+#: .\contracts\templates\contracts\contract_edit.html:5
+msgid "Edit contract"
+msgstr "Редакция на договор"
+
+#: .\contracts\templates\contracts\contract_edit.html:11
+#: .\contracts\templates\contracts\trip_form.html:11
+msgid "Save"
+msgstr "Запази"
+
+#: .\contracts\templates\contracts\contract_edit.html:12
+#: .\contracts\templates\contracts\trip_form.html:12
+msgid "Back"
+msgstr "Назад"
+
+#: .\contracts\templates\contracts\contract_form.html:7
+#: .\contracts\templates\contracts\trip_form.html:5
+#: .\contracts\templates\contracts\trip_list.html:7
+msgid "New trip"
+msgstr "Нова екскурзия"
+
+#: .\contracts\templates\contracts\contract_form.html:22
+msgid "Create contract"
+msgstr "Създай договор"
+
+#: .\contracts\templates\contracts\contract_list.html:9
+msgid "Number, name, EGN or destination"
+msgstr "Номер, име, ЕГН или дестинация"
+
+#: .\contracts\templates\contracts\contract_list.html:11
+msgid "All statuses"
+msgstr "Всички статуси"
+
+#: .\contracts\templates\contracts\contract_list.html:16
+msgid "Search"
+msgstr "Търси"
+
+#: .\contracts\templates\contracts\contract_list.html:24
+msgid "Date"
+msgstr "Дата"
+
+#: .\contracts\templates\contracts\contract_list.html:40
+msgid "No contracts yet."
+msgstr "Все още няма договори."
+
+#: .\contracts\templates\contracts\trip_form.html:5
+msgid "Edit trip"
+msgstr "Редакция на екскурзия"
+
+#: .\contracts\templates\contracts\trip_list.html:15
+msgid "Dates"
+msgstr "Дати"
+
+#: .\contracts\templates\contracts\trip_list.html:30
+msgid "Copy"
+msgstr "Копирай"
+
+#: .\contracts\templates\contracts\trip_list.html:34
+msgid "No trips yet."
+msgstr "Все още няма екскурзии."
+
+#: .\contracts\views.py:61
+msgid "Add at least one traveler."
+msgstr "Добавете поне един турист."
+
+#: .\contracts\views.py:106
+msgid "This contract has no email address."
+msgstr "Договорът няма имейл адрес."
+
+#: .\contracts\views.py:112
+#, python-format
+msgid "Sending failed: %(error)s"
+msgstr "Изпращането не успя: %(error)s"
+
+#: .\contracts\views.py:114
+#, python-format
+msgid "The contract was sent to %(email)s."
+msgstr "Договорът е изпратен до %(email)s."
+
+#: .\contracts\views.py:133
+msgid "The signed contract was uploaded."
+msgstr "Подписаният договор е качен."
+
+#: .\contracts\views.py:156
+msgid "The contract was archived."
+msgstr "Договорът е архивиран."
+
+#: .\contracts\views.py:166
+msgid "The contract was cancelled."
+msgstr "Договорът е анулиран."
+
+#: .\contracts\views.py:188
+msgid "The trip was saved."
+msgstr "Екскурзията е запазена."
+
+#: .\contracts\views.py:196
+msgid "Archived or cancelled contracts cannot be edited."
+msgstr "Архивирани или анулирани договори не могат да се редактират."
+
+#: .\contracts\views.py:202
+msgid "The contract was saved."
+msgstr "Договорът е запазен."

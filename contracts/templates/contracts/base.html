@@ -1,0 +1,47 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Enev Contracts{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css">
+  <style>
+    /* Messages: green for success, red for errors */
+    .msg { border-left: 5px solid #2e7d32; }
+    .msg-error { border-left-color: #c62828; }
+
+    /* Action buttons: side by side, same height, natural width */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .actions form { margin: 0; }
+    .actions button, .actions [role="button"] { width: auto; margin: 0; }
+  </style>
+</head>
+<body>
+  <header class="container">
+    <nav>
+      <ul><li><strong>ENEV HOLIDAY</strong></li></ul>
+      <ul>
+        <li><a href="{% url 'contracts:list' %}">{% translate "Contracts" %}</a></li>
+                <li><a href="{% url 'contracts:trip_list' %}">{% translate "Trips" %}</a></li>
+        <li><a href="{% url 'contracts:create' %}">{% translate "New contract" %}</a></li>
+        <li>
+          <form action="{% url 'set_language' %}" method="post" style="margin:0; display:flex; gap:4px">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button name="language" value="bg" class="outline secondary" style="padding:4px 8px">BG</button>
+            <button name="language" value="en" class="outline secondary" style="padding:4px 8px">EN</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    {% for message in messages %}
+      <article class="msg msg-{{ message.tags }}">{{ message }}</article>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

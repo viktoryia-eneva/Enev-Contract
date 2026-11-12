@@ -1,0 +1,15 @@
+{% extends "contracts/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate "Edit contract" %} № {{ contract.number }}</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_div }}
+  <div class="actions">
+    <button type="submit">{% translate "Save" %}</button>
+    <a href="{% url 'contracts:detail' contract.pk %}" role="button" class="secondary outline">{% translate "Back" %}</a>
+  </div>
+</form>
+{% endblock %}

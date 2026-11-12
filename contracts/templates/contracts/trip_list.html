@@ -1,0 +1,38 @@
+{% extends "contracts/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="actions" style="justify-content: space-between">
+  <h1 style="margin: 0">{% translate "Trips" %}</h1>
+  <a href="{% url 'contracts:trip_create' %}" role="button">+ {% translate "New trip" %}</a>
+</div>
+<br>
+
+<table>
+  <thead>
+    <tr>
+      <th>{% translate "Destination" %}</th>
+      <th>{% translate "Dates" %}</th>
+      <th>{% translate "Departure point" %}</th>
+      <th>{% translate "Contracts" %}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for trip in trips %}
+      <tr>
+        <td>{{ trip.destination }}</td>
+        <td>{{ trip.date_from|date:"d.m.Y" }} – {{ trip.date_to|date:"d.m.Y" }}</td>
+        <td>{{ trip.start_point }}</td>
+        <td>{{ trip.contract_count }}</td>
+        <td>
+          <a href="{% url 'contracts:trip_edit' trip.pk %}">{% translate "Edit" %}</a> ·
+          <a href="{% url 'contracts:trip_create' %}?copy={{ trip.pk }}">{% translate "Copy" %}</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">{% translate "No trips yet." %}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

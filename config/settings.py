@@ -11,21 +11,27 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 from django.utils.translation import gettext_lazy as _
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n0ah+pq4*ihvgmvdrr-wf%@^2d#+w1n9d(0sp(35us*2-3263c'
+# On the server these come from .env; locally the defaults are used
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-n0ah+pq4*ihvgmvdrr-wf%@^2d#+w1n9d(0sp(35us*2-3263c")
+DEBUG = os.getenv("DEBUG", "True") == "True"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+if not DEBUG:
+    # Cookies only over HTTPS
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -111,7 +117,7 @@ LANGUAGES = [
     ("en", _("English")),
 ]
 
-LOCAL_PATHS = [BASE_DIR / "locale"]
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
 TIME_ZONE = 'Europe/Sofia'
 
@@ -124,13 +130,40 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+EMAIL_USER = os.getenv("EMAIL_USER", "")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "")
+
+if EMAIL_PASSWORD:
+    # Real sending through Gmail
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": "smtp.gmail.com",
+                "port": 587,
+                "username": EMAIL_USER,
+                "password": EMAIL_PASSWORD,
+                "use_tls": True,
+            },
+        },
+    }
+else:
+    # No password in .env: print emails in the terminal instead of sending them
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        },
+    }
+
+DEFAULT_FROM_EMAIL = f"ENEV HOLIDAY <{EMAIL_USER}>" if EMAIL_USER else "webmaster@localhost"
+
+LOGIN_URL = "admin:login"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media" 
