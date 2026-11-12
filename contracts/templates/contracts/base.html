@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
@@ -6,6 +6,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Enev Contracts{% endblock %}</title>
+    <link rel="manifest" href="{% static 'contracts/manifest.json' %}">
+  <link rel="apple-touch-icon" href="{% static 'contracts/icons/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" href="{% static 'contracts/icons/favicon-32.png' %}">
+  <meta name="theme-color" content="#043440">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css">
   <style>
     /* Messages: green for success, red for errors */
