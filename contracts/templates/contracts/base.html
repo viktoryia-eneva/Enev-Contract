@@ -34,6 +34,16 @@
             <button name="language" value="en" class="outline secondary" style="padding:4px 8px">EN</button>
           </form>
         </li>
+                {% if user.is_authenticated %}
+          <li>
+            <form action="{% url 'admin:logout' %}" method="post" style="margin:0">
+              {% csrf_token %}
+              <button type="submit" class="outline secondary" style="padding:4px 8px">
+                {% translate "Log out" %}
+              </button>
+            </form>
+          </li>
+        {% endif %}
       </ul>
     </nav>
   </header>
