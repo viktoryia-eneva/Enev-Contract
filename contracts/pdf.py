@@ -6,6 +6,7 @@ from django.utils import translation
 from xhtml2pdf import pisa
 
 FONTS_DIR = Path(__file__).resolve().parent / "fonts"
+STAMP_PATH = Path(__file__).resolve().parent.parent / "private" / "stamp.png"
 
 def render_contract_pdf(contract):
     """Build the contract PDF, save it in contract.pdf and return the bytes."""
@@ -21,6 +22,7 @@ def render_contract_pdf(contract):
         "balance": balance,
         "font_regular": (FONTS_DIR / "DejaVuSans.ttf").as_posix(),
         "font_bold": (FONTS_DIR / "DejaVuSans-Bold.ttf").as_posix(),
+        "stamp": STAMP_PATH.as_posix() if STAMP_PATH.exists() else None, 
     }
     
     with translation.override("bg"):

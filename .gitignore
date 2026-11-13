@@ -18,3 +18,5 @@ staticfiles/
 .vscode/
 Thumbs.db
 .DS_Store
+# Company stamp and signature (never publish)
+private/
