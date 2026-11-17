@@ -8,7 +8,7 @@ from .models import Contract, Trip
 class ContractForm(forms.Form):
     trip = forms.ModelChoiceField(queryset=Trip.objects.all(), label=_("Trip"))
     email = forms.EmailField(label=_("Email for sending"))
-    price = forms.DecimalField(label=_("Package price (EUR)"), max_digits=10, decimal_places=2)
+    price = forms.DecimalField(label=_("Package price (EUR)"), max_digits=10, decimal_places=2, required=False, help_text=_("Leave empty to calculate automatically: price per person x number of travelers."))
     deposit = forms.DecimalField(label=_("Deposit (EUR)"), required=False, max_digits=10, decimal_places=2)
     
 class TravelerForm(forms.Form):
@@ -27,7 +27,7 @@ class TravelerForm(forms.Form):
         if egn and (not egn.isdigit() or len(egn) != 10):
             self.add_error("egn", _("The personal ID must be exactly 10 digits."))
         return cleaned
-TravelerFormSet = formset_factory(TravelerForm, extra=4)
+TravelerFormSet = formset_factory(TravelerForm, extra=1)
 
 ALLOWED_SIGNED_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png"]
 MAX_SIGNED_SIZE_MB = 10
@@ -72,3 +72,8 @@ class ContractEditForm(forms.ModelForm):
         widgets = {
             "contract_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
         }
+    
+    def __init__(self, *args, **kwags):
+        super().__init__(*args, **kwags)
+        self.fields["price"].required = False
+        self.fields["price"].help_text = _("Leave empty to calculate automatically: price per person x number of travelers.")

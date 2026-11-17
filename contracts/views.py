@@ -20,6 +20,11 @@ from django.utils import timezone
 from .forms import ContractForm,ContractEditForm, SignedContractForm, TravelerFormSet, TripForm
 from django.forms import model_to_dict
 
+def calculate_price(trip, traveler_count):
+    """Total price = price per person x number of travelers."""
+    
+    return trip.price_per_person * traveler_count
+
 @login_required
 def contract_list(request):
     contracts = Contract.objects.select_related("trip").prefetch_related("travelers")
@@ -65,7 +70,8 @@ def contract_create(request):
                         trip = form.cleaned_data["trip"],
                         
                         email = form.cleaned_data["email"],
-                        price = form.cleaned_data["price"],
+                        price = form.cleaned_data["price"] if form.cleaned_data["price"] is not None
+                        else calculate_price(form.cleaned_data["trip"], len(rows)),
                         deposit = form.cleaned_data["deposit"],
                     )
                     
@@ -198,7 +204,10 @@ def contract_edit(request, pk):
     
     form = ContractEditForm(request.POST or None, instance=contract)
     if request.method == "POST" and form.is_valid():
-        form.save()
+        contract = form.save(commit=False)
+        if form.cleaned_data["price"] is None:
+            contract.price = calculate_price(contract.trip, contract.travelers.count())
+        contract.save()
         messages.success(request, _("The contract was saved."))
         return redirect("contracts:detail", pk=pk)
     return render(request, "contracts/contract_edit.html", {"form": form, "contract": contract})

@@ -6,7 +6,8 @@ from django.utils.translation import gettext_lazy as _
 FIRST_CONTRACT_NUMBER = 177
 
 class Trip(models.Model):
-    destination = models.CharField(_("Destination"), max_length=200)
+    destination = models.CharField(_("Destination"),max_length=200)
+    price_per_person = models.DecimalField(_("Price per person (EUR)"), max_digits=10, decimal_places=2, default=0)
     date_from = models.DateField(_("Date from"))
     date_to = models.DateField(_("Date to"))
     start_point = models.CharField(_("Departure point"), max_length=200)
