@@ -12,7 +12,7 @@ import smtplib
 
 from django.contrib import messages
 from django.views.decorators.http import require_POST
-from .emails import send_contract_email
+from .emails import send_cancellation_email, send_contract_email
 from pathlib import Path
 from django.db.models import Q, Count
 from django.http import FileResponse, Http404, HttpResponse
@@ -24,6 +24,15 @@ def calculate_price(trip, traveler_count):
     """Total price = price per person x number of travelers."""
     
     return trip.price_per_person * traveler_count
+
+def save_travelers(rows):
+    """Create or update travelers by EGN and return the list."""
+    travelers = []
+    for row in rows:
+        traveler, _created = Traveler.objects.update_or_create(egn=row["egn"].strip(),defaults={"full_name": row["full_name"].strip()},
+                                                               )
+        travelers.append(traveler)
+    return travelers
 
 @login_required
 def contract_list(request):
@@ -75,12 +84,7 @@ def contract_create(request):
                         deposit = form.cleaned_data["deposit"],
                     )
                     
-                    for row in rows:
-                        traveler, _created = Traveler.objects.update_or_create(
-                            egn = row["egn"].strip(),
-                            defaults={"full_name": row["full_name"].strip()},
-                        )
-                        contract.travelers.add(traveler)
+                    contract.travelers.set(save_travelers(rows))
                 return redirect("contracts:detail", pk=contract.pk)
     else:
         form = ContractForm()
@@ -108,6 +112,10 @@ def contract_pdf(request, pk):
 def contract_send(request, pk):
     contract = get_object_or_404(Contract.objects.select_related("trip"), pk=pk)
     
+    if  contract.is_closed():
+        messages.error(request, _("Archived or cancelled contracts cannot be sent."))
+        return redirect("contracts:detail", pk=pk)
+    
     if not contract.email:
         messages.error(request, _("This contract has no email address."))
         return redirect("contracts:detail", pk=pk)
@@ -117,7 +125,7 @@ def contract_send(request, pk):
     except (smtplib.SMTPException, OSError) as error:
         messages.error(request, _("Sending failed: %(error)s") % {"error": error})
     else:
-        messages.success(request, _("The contract was sent to %(email)s.") % {"email": contract.email})
+        messages.success(request, _("The contract was sent to %(email)s.") % {"email": ",".join(contract.email_list())})
     return redirect("contracts:detail", pk=pk)
 
 @login_required
@@ -165,12 +173,35 @@ def contract_archive(request, pk):
 @login_required
 @require_POST
 def contract_cancel(request, pk):
-    contract = get_object_or_404(Contract, pk=pk)
+    contract = get_object_or_404(Contract.objects.select_related("trip"), pk=pk)
     if contract.can_cancel():
         contract.status = Contract.Status.CANCELLED
         contract.save(update_fields=["status", "updated_at"])
         messages.success(request, _("The contract was cancelled."))
+        
+        if contract.email_list():
+            try:
+                send_cancellation_email(contract)
+            except (smtplib.SMTPException, OSError) as error:
+                messages.warning(request, _("The client was not notified: %(error)s") % {"error": error})
+            else:
+                messages.info(request, _("The client was notified by email."))
     return redirect("contracts:detail", pk=pk)
+
+@login_required
+@require_POST
+def contract_delete(request, pk):
+    contract = get_object_or_404(Contract, pk=pk)
+    number = contract.number
+    
+    if contract.pdf:
+        contract.pdf.delete(save=False)
+    if contract.signed_file:
+        contract.signed_file.delete(save=False)
+    
+    contract.delete()
+    messages.success(request, _("Contract № %(number)s was deleted.") % {"number": number})
+    return redirect("contracts:list")
 
 @login_required
 def trip_list(request):
@@ -202,12 +233,24 @@ def contract_edit(request, pk):
         messages.error(request, _("Archived or cancelled contracts cannot be edited."))
         return redirect("contracts:detail", pk=pk)
     
+    initial = [{"full_name": t.full_name, "egn": t.egn} for t in contract.travelers.all()]
     form = ContractEditForm(request.POST or None, instance=contract)
-    if request.method == "POST" and form.is_valid():
-        contract = form.save(commit=False)
-        if form.cleaned_data["price"] is None:
-            contract.price = calculate_price(contract.trip, contract.travelers.count())
-        contract.save()
-        messages.success(request, _("The contract was saved."))
-        return redirect("contracts:detail", pk=pk)
-    return render(request, "contracts/contract_edit.html", {"form": form, "contract": contract})
+    formset = TravelerFormSet(request.POST or None, prefix="travelers", initial=initial)
+    
+    if request.method == "POST" and form.is_valid() and formset.is_valid():
+        rows = [f.cleaned_data for f in formset if f.cleaned_data.get("egn")]
+        if not rows:
+            form.add_error(None, _("Add at least one traveler."))
+        else:
+            with transaction.atomic():
+                contract = form.save(commit=False)
+                if form.cleaned_data["price"] is None:
+                    contract.price = calculate_price(contract.trip, len(rows))
+                contract.save()
+                contract.travelers.set(save_travelers(rows))
+            messages.success(request, _("The contract was saved."))
+            return redirect("contracts:detail", pk=pk)
+
+    return render(request, "contracts/contract_edit.html",
+                  {"form": form, "formset": formset, "contract": contract})
+       

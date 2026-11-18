@@ -19,7 +19,7 @@ def send_contract_email(contract):
     message = EmailMessage(
         subject=f"Договор № {contract.number} – {contract.trip.destination}",
         body=body,
-        to=[contract.email],
+        to=contract.email_list(),
     )
     message.attach(f"contract_{contract.number}.pdf", pdf_bytes, "application/pdf")
     message.send()
@@ -28,3 +28,11 @@ def send_contract_email(contract):
     contract.status = Contract.Status.SENT
     contract.sent_at = timezone.now()
     contract.save(update_fields=["status", "sent_at", "updated_at"])
+    
+def send_cancellation_email(contract):
+    """Tell the client that the contract was cancelled (no PDF)."""
+    
+    with translation.override("bg"):
+        body = render_to_string("contracts/email_cancelled.txt", {"contract": contract, "trip": contract.trip},)
+        
+        EmailMessage(subject=f"Анулиран договор № {contract.number} - {contract.trip.destination}", body=body, to=contract.email_list(),).send()

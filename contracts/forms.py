@@ -3,11 +3,11 @@ from django.forms import formset_factory
 from django.utils.translation import gettext_lazy as _
 from .models import Trip
 from pathlib import Path
-from .models import Contract, Trip
+from .models import Contract, Trip, validate_email_list
 
 class ContractForm(forms.Form):
     trip = forms.ModelChoiceField(queryset=Trip.objects.all(), label=_("Trip"))
-    email = forms.EmailField(label=_("Email for sending"))
+    email = forms.CharField(label=_("Email for sending"), max_length=500, validators=[validate_email_list], help_text=_("Separate several emails with commas."),)
     price = forms.DecimalField(label=_("Package price (EUR)"), max_digits=10, decimal_places=2, required=False, help_text=_("Leave empty to calculate automatically: price per person x number of travelers."))
     deposit = forms.DecimalField(label=_("Deposit (EUR)"), required=False, max_digits=10, decimal_places=2)
     

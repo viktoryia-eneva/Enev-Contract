@@ -27,12 +27,17 @@
     <a href="{% url 'contracts:edit' contract.pk %}" role="button" class="secondary outline">
       {% translate "Edit" %}
     </a>
+
+
   {% endif %}
   
   <a href="{% url 'contracts:pdf' contract.pk %}" target="_blank" role="button" class="secondary">
     {% translate "Generate PDF" %}
   </a>
 
+    <button type="button" id="share-btn" class="secondary">{% translate "Share" %}</button>
+
+   {% if not contract.is_closed %}
    {% translate "Send the contract to" as confirm_text %}
   <form method="post" action="{% url 'contracts:send' contract.pk %}"
         onsubmit="return confirm('{{ confirm_text|escapejs }} {{ contract.email|escapejs }}?')">
@@ -41,6 +46,7 @@
       {% translate "Send by email" %}
     </button>
   </form>
+  {% endif %}
 </div>
 <h3>{% translate "Signed contract" %}</h3>
 
@@ -78,5 +84,53 @@
       <button type="submit" class="secondary outline">{% translate "Cancel contract" %}</button>
     </form>
   {% endif %}
+
+    {% translate "Delete this contract permanently? This cannot be undone." as delete_text %}
+  <form method="post" action="{% url 'contracts:delete' contract.pk %}"
+        onsubmit="return confirm('{{ delete_text|escapejs }}')">
+    {% csrf_token %}
+    <button type="submit" class="secondary outline" style="color:#c0392b; border-color:#c0392b">
+      {% translate "Delete" %}
+    </button>
+  </form>
 </div>
+
+<script>
+  (function () {
+    const btn = document.getElementById("share-btn");
+    const url = "{% url 'contracts:pdf' contract.pk %}";
+    const name = "contract_{{ contract.number }}.pdf";
+    let pdfPromise = null;
+
+    // Download the PDF once and keep it as a File
+    function loadPdf() {
+      if (!pdfPromise) {
+        pdfPromise = fetch(url)
+          .then(r => r.blob())
+          .then(b => new File([b], name, { type: "application/pdf" }));
+      }
+      return pdfPromise;
+    }
+
+    // On phones start preparing the PDF right away, so Share opens fast
+    if (navigator.canShare) loadPdf();
+
+    btn.addEventListener("click", async function () {
+      try {
+        const file = await loadPdf();
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: name });
+          return;
+        }
+      } catch (error) {
+        if (error.name === "AbortError") return; // user closed the share menu
+      }
+      // Fallback (device can't share files): just download the PDF
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = name;
+      a.click();
+    });
+  })();
+</script>
 {% endblock %}

@@ -2,8 +2,23 @@ from django.db import models
 from datetime import date
 from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 FIRST_CONTRACT_NUMBER = 177
+
+def split_emails(value):
+    """'a@x.bg, b@y.bg' -> ['a@x.bg', 'b@y.bg'] (also accepts ';')."""
+    return [e.strip() for e in value.replace(";", ",").split(",") if e.strip()]
+
+def validate_email_list(value):
+    """Check every address in a coma-separated list."""
+    
+    for address in split_emails(value):
+        try:
+            validate_email(address)
+        except ValidationError:
+            raise ValidationError(_("Invalid email: %(email)s"), params={"email": address})
 
 class Trip(models.Model):
     destination = models.CharField(_("Destination"),max_length=200)
@@ -60,7 +75,7 @@ class Contract(models.Model):
         travelers = models.ManyToManyField(Traveler, related_name="contracts", verbose_name=_("Travelers"))
         price = models.DecimalField(_("Package price (EUR)"), max_digits=10, decimal_places=2, default=0)
         deposit = models.DecimalField(_("Deposit (EUR)"), max_digits=10, decimal_places=2, null=True, blank=True)
-        email = models.EmailField(_("Email for sending"), blank=True)
+        email = models.CharField(_("Email for sending"), max_length=500, blank=True, validators=[validate_email_list], help_text=_("Separate several emails with commas."),)
         status = models.CharField(_("Status"), max_length=20, choices=Status.choices, default=Status.DRAFT)
         pdf = models.FileField(_("Generated PDF"), upload_to="contracts/generated/", blank=True)
         signed_file = models.FileField(_("Signed contract"), upload_to="contracts/signed/", blank=True)
@@ -85,6 +100,9 @@ class Contract(models.Model):
         
         def is_closed(self):
             return self.status in (self.Status.ARCHIVED, self.Status.CANCELLED)
+        
+        def email_list(self):
+            return split_emails(self.email)
         
         def save(self, *args, **kwargs):
             if not self.number:

@@ -1,0 +1,8 @@
+Здравейте,
+
+Уведомяваме Ви, че договор № {{ contract.number }} от {{ contract.contract_date|date:"d.m.Y" }} за екскурзия „{{ trip.destination }}“ ({{ trip.date_from|date:"d.m.Y" }} – {{ trip.date_to|date:"d.m.Y" }}) е анулиран.
+
+При въпроси се свържете с нас на 087 666 1401 или 089 971 6815.
+
+Поздрави,
+„Енев Груп Холидей“ ЕООД

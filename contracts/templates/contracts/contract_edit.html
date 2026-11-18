@@ -7,6 +7,7 @@
 <form method="post">
   {% csrf_token %}
   {{ form.as_div }}
+  {% include "contracts/_travelers.html" %}
   <div class="actions">
     <button type="submit">{% translate "Save" %}</button>
     <a href="{% url 'contracts:detail' contract.pk %}" role="button" class="secondary outline">{% translate "Back" %}</a>

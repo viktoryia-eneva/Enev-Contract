@@ -9,15 +9,7 @@
 <form method="post">
   {% csrf_token %}
   {{ form.as_div }}
-
-  <h3>{% translate "Travelers" %}</h3>
-  {{ formset.management_form }}
-  {% for f in formset %}
-    <div class="grid">
-      <div>{{ f.full_name.label_tag }} {{ f.full_name }} {{ f.full_name.errors }}</div>
-      <div>{{ f.egn.label_tag }} {{ f.egn }} {{ f.egn.errors }}</div>
-    </div>
-  {% endfor %}
+  {% include "contracts/_travelers.html" %}
 
   <button type="submit">{% translate "Create contract" %}</button>
 </form>
