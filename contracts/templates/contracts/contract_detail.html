@@ -37,6 +37,14 @@
 
     <button type="button" id="share-btn" class="secondary">{% translate "Share" %}</button>
 
+      {% if not contract.is_closed %}
+    <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" role="button"
+       style="background:#25D366; border-color:#25D366">WhatsApp</a>
+    <a href="{{ viber_url }}" role="button"
+       style="background:#7360F2; border-color:#7360F2">Viber</a>
+    <button type="button" id="copy-link" class="secondary outline">{% translate "Copy link" %}</button>
+  {% endif %}
+
    {% if not contract.is_closed %}
    {% translate "Send the contract to" as confirm_text %}
   <form method="post" action="{% url 'contracts:send' contract.pk %}"
@@ -132,5 +140,14 @@
       a.click();
     });
   })();
+
+  const copyBtn = document.getElementById("copy-link");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async function () {
+      await navigator.clipboard.writeText("{{ share_url|escapejs }}");
+      copyBtn.textContent = "✓";
+    });
+  }
+
 </script>
 {% endblock %}

@@ -7,6 +7,9 @@ from .forms import ContractForm, TravelerFormSet
 from .models import Contract, Traveler, Trip
 from django.http import HttpResponse
 from .pdf import render_contract_pdf
+from urllib.parse import quote
+from django.core import signing
+from django.urls import reverse
 
 import smtplib
 
@@ -24,6 +27,14 @@ def calculate_price(trip, traveler_count):
     """Total price = price per person x number of travelers."""
     
     return trip.price_per_person * traveler_count
+
+SHARE_SALT = 'contract-share'
+SHARE_DAYS = 7
+
+def make_share_url(request, contract):
+    """Signed link to the contract PDF that works without login."""
+    token = signing.dumps(contract.pk, salt=SHARE_SALT)
+    return request.build_absolute_uri(reverse("contracts:public_pdf", args=[token]))
 
 def save_travelers(rows):
     """Create or update travelers by EGN and return the list."""
@@ -95,7 +106,11 @@ def contract_create(request):
 @login_required
 def contract_detail(request, pk):
     contract = get_object_or_404(Contract.objects.select_related("trip"), pk=pk)
-    return render(request, "contracts/contract_detail.html", {"contract": contract, "upload_form": SignedContractForm(),})
+    share_url = make_share_url(request, contract)
+    text = (f"Здравейте, изпращаме Ви договор № {contract.number} за екскурзия "
+            f"„{contract.trip.destination}“: {share_url} (линкът е валиден {SHARE_DAYS} дни)")
+    
+    return render(request, "contracts/contract_detail.html", {"contract": contract, "upload_form": SignedContractForm(), "share_url": share_url, "whatsapp_url": "https://wa.me/?text=" + quote(text),"viber_url":"viber://forward?text=" + quote(text), })
 
 
 @login_required
@@ -105,6 +120,20 @@ def contract_pdf(request, pk):
     
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
     response["Content-Disposition"] = f'inline;filename="contract_{contract.number}.pdf"'
+    return response
+
+def contract_public_pdf(request, token):
+    """PDF for the client via a signed link - no login, expires after SHARE_DAYS."""
+    try:
+        pk = signing.loads(token, salt = SHARE_SALT, max_age=SHARE_DAYS * 24 * 60 * 60)
+    except signing.BadSignature:
+        raise Http404
+    contract = get_object_or_404(Contract.objects.select_related("trip"), pk=pk)
+    if contract.status == Contract.Status.CANCELLED: 
+        raise Http404
+    
+    response = HttpResponse(render_contract_pdf(contract), content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="contract_{contract.number}.pdf"'
     return response
 
 @login_required
